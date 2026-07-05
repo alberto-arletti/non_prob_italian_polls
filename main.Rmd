@@ -1,0 +1,193 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+# load libraries 
+library(dplyr)
+options(dplyr.summarise.inform = FALSE)
+library(tidyr)
+```
+
+```{r}
+# load samples
+load('data/waves.Rdata')
+# load census tables 
+load('data/poptable.Rdata')
+```
+
+```{r}
+# import functions
+source('helper_rev.R')
+```
+
+
+```{r}
+# define fixed objects
+coalitions <- c('CSX', 'CDX', 'Az', 'M5S', 'altri')
+# define available adjustment columns
+COLS <-  c('gen', 'age', 'emp', 'edu', 'zone', 'pastvote')
+# define census tables to iterate over
+census_list <- c('edu', 'emp', 'pastvote', 'approx')
+
+# build iteration grid
+iter_grid <- expand.grid(
+  df_name = names(main),
+  census_name = census_list,
+  stringsAsFactors = FALSE
+)
+
+# run one sample-census combination
+run_one <- function(df_name, census_name, iter_id = NA, n_iter = NA) {
+  # print progress
+  print(paste('processing', iter_id, 'of', n_iter, df_name, census_name))
+  # select census 
+  ref_table <- poptable[[census_name]]
+  # select data 
+  to_adj <- main[[df_name]]
+  # check or pastvote 
+  census_cols <- colnames(ref_table)[colnames(ref_table) %in% COLS]
+  # check available sample columns
+  data_cols <- colnames(to_adj)[colnames(to_adj) %in% COLS]
+  
+  # skip sample-census combinations that cannot be adjusted
+  if (!all(census_cols %in% data_cols)) {
+    # print skipped combination
+    print(paste('skipping', df_name, census_name, '- missing columns in sample'))
+    # return empty result
+    return(NULL)
+  }
+  
+  # unweighted
+  unweighted_out <- data.frame(
+    sample = df_name,
+    census = census_name,
+    method = 'unadjusted',
+    uniweighted(to_adj)
+  )
+
+  # post-stratification or calibration (the same here)
+  poststrat_out <- data.frame(
+    sample = df_name,
+    census = census_name,
+    method = 'post-stratification',
+    poststrat(to_adj, ref_table)
+  )
+
+  # multinomial linear model-assisted post-stratification
+  multinomial_out <- data.frame(
+    sample = df_name,
+    census = census_name,
+    method = 'MN post-stratification',
+    multinomial(
+      to_adj,
+      ref_table,
+      B = 5 # 1000
+    )
+  )
+
+  # generate approximate reference sample
+  reference_survey <- generate_reference(census = ref_table)
+  # logit IPW
+  ipw_out <- data.frame(
+    sample = df_name,
+    census = census_name,
+    method = 'Logit-IPW',
+    ps_ipw(to_adj, reference_survey, trim = 5, B = 5)
+  )
+
+  # # generate approximate reference sample
+  # reference_survey <- generate_reference(census = ref_table)
+  # run IPW with a gradient-boosted selection model
+  xgboost_out <- nonprob_ipw_xgb(
+    # non-probability survey
+    data = to_adj,
+    # generated reference sample
+    reference_survey = reference_survey,
+    # bootstrap SEs
+    var_method = "bootstrap",
+    # bootstrap repetitions
+    num_boot = 10 # 1000
+  )
+  # XGBoost IPW
+  xgboost_out <- data.frame(
+    sample = df_name,
+    census = census_name,
+    method = 'XGboost-IPW',
+    xgboost_out
+  )
+
+  # DRP
+  drp_out <- data.frame(
+    sample = df_name,
+    census = census_name,
+    method = 'DRP',
+    nonprob_drp(to_adj, ref_table)
+  )
+
+  # # force rstan to avoid parallel chains
+  # options(mc.cores = 1)
+  # mrp_out <- mrp(
+  #   data = to_adj,
+  #   census = ref_table,
+  #   draws = 50,
+  #   chains = 2,
+  #   iter = 200,
+  #   cores = 1
+  # )
+  # # MPR
+  # mrp_out <- data.frame(sample = df_name,
+  #                   census = census_name,
+  #                   method = 'MRP',
+  #                   mrp_out
+  # )
+  
+  # # NN
+  # nn_out <- nn_poststrat(
+  #   data = to_adj,
+  #   census = ref_table,
+  #   B = 2, # 1000
+  #   n_epochs = 50, 
+  #   n_neurons = 2, #8,
+  #   n_hidden = 2, 
+  #   batch_size = 32,
+  #   learning_rate = 1e-3,
+  #   early_stopping = TRUE
+  # )
+  # nn_out <- data.frame(sample = df_name,
+  #                   census = census_name,
+  #                   method = 'NN',
+  #                   nn_out
+  # )
+  
+  # append all results for this sample-census combination
+  rbind(
+    unweighted_out,
+    poststrat_out,
+    multinomial_out,
+    ipw_out,
+    xgboost_out,
+    drp_out
+    # mrp_out,
+    # nn_out
+  )
+}
+
+# run all iterations using lapply
+out_list <- lapply(seq_len(nrow(iter_grid)), function(i) {
+  # run one sample-census combination
+  run_one(
+    df_name = iter_grid$df_name[i],
+    census_name = iter_grid$census_name[i],
+    iter_id = i,
+    n_iter = nrow(iter_grid)
+  )
+})
+
+# append the results into a common dataframe
+out <- do.call(rbind, out_list)
+
+# clean row names
+rownames(out) <- NULL
+```
