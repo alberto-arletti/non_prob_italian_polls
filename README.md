@@ -39,9 +39,7 @@ in `census/` match your local copy.
 
 - **Dataset 5** (`data_rev/sample.Rdata`) is included for replication, shared
   with the permission of Demetra Opinioni s.r.l.
-- **Datasets 1–4** are proprietary and are **not** distributed here. They are
-  available from Demetra Opinioni s.r.l. on reasonable request, subject to the
-  company's permission.
+- **Datasets 1–4** are proprietary and are **not** distributed here. 
 - **Census tables** in `census/` are derived from publicly available Istat
   dissemination systems (I.Stat, IstatData, Permanent Population and Housing
   Census) and from the Italian Ministry of the Interior electoral archive
