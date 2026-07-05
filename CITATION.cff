@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this software or data, please cite it as below."
+title: "Adjusting Non-Probability Samples Under Weak Auxiliary Information: An Empirical Benchmark from the 2022 Italian Elections"
+type: software
+authors:
+  - family-names: Arletti
+    given-names: Alberto
+    affiliation: "Department of Statistical Sciences, University of Padova"
+    orcid: "https://orcid.org/0009-0009-1776-3163"
+  - family-names: Paccagnella
+    given-names: Omar
+    affiliation: "Department of Statistical Sciences, University of Padova"
+  - family-names: Tanturri
+    given-names: Maria Letizia
+    affiliation: "Department of Statistical Sciences, University of Padova"
+version: 1.0.0
+date-released: 2026-07-05
+url: "https://github.com/alberto-arletti/non_prob_italian_polls"
