@@ -1,5 +1,7 @@
 # Adjusting Non-Probability Samples Under Weak Auxiliary Information
 
+[![DOI](https://zenodo.org/badge/1052735401.svg)](https://doi.org/10.5281/zenodo.21200506)
+
 Replication code and shareable data for the paper
 **"Adjusting Non-Probability Samples Under Weak Auxiliary Information: An Empirical Benchmark from the 2022 Italian Elections"**
 by Alberto Arletti, Omar Paccagnella, and Maria Letizia Tanturri.
@@ -86,12 +88,12 @@ restricted data.
 If you use this code or data, please cite the paper:
 
 ```bibtex
-@article{arletti2025adjusting,
-  title   = {Adjusting Non-Probability Samples Under Weak Auxiliary Information:
-             An Empirical Benchmark from the 2022 Italian Elections},
+@software{arletti2025code,
   author  = {Arletti, Alberto and Paccagnella, Omar and Tanturri, Maria Letizia},
+  title   = {non\_prob\_italian\_polls: Replication code and data},
   year    = {2025},
-  note    = {Working paper}
+  doi     = {10.5281/zenodo.21200507},
+  url     = {https://doi.org/10.5281/zenodo.21200507}
 }
 ```
 
