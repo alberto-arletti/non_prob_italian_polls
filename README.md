@@ -91,7 +91,8 @@ If you use this code or data, please cite the paper:
 @software{arletti2025code,
   author  = {Arletti, Alberto and Paccagnella, Omar and Tanturri, Maria Letizia},
   title   = {non\_prob\_italian\_polls: Replication code and data},
-  year    = {2025},
+  year    = {2026},
+  version = {1.0.0},
   doi     = {10.5281/zenodo.21200507},
   url     = {https://doi.org/10.5281/zenodo.21200507}
 }
