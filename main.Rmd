@@ -12,9 +12,9 @@ library(tidyr)
 
 ```{r}
 # load samples
-load('data/samples.Rdata')
+load('data_rev/samples.Rdata')
 # load census tables 
-load('data/poptable.Rdata')
+load('data_rev/poptable.Rdata')
 ```
 
 ```{r}
