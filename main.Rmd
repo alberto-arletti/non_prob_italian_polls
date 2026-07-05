@@ -12,7 +12,7 @@ library(tidyr)
 
 ```{r}
 # load samples
-load('data/waves.Rdata')
+load('data/samples.Rdata')
 # load census tables 
 load('data/poptable.Rdata')
 ```
